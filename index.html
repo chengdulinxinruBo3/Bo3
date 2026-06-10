@@ -5,252 +5,456 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>博杉 · AI 视频提示词生成器</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
-      line-height: 1.7;
+    :root {
+      --orange: #FF6B2B;
+      --orange-glow: #FF8C4A;
+      --orange-dim: rgba(255, 107, 43, 0.15);
+      --orange-faint: rgba(255, 107, 43, 0.06);
+      --bg-deep: #060609;
+      --bg-card: rgba(255, 255, 255, 0.02);
+      --border: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 107, 43, 0.25);
+      --text: #bcc5d0;
+      --text-dim: #5a6270;
+      --text-bright: #e8ecf2;
     }
 
-    /* ── Hero ── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Noto Sans SC", sans-serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ═══════════ Background grid pattern ═══════════ */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 107, 43, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 107, 43, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ═══════════ Scanline overlay ═══════════ */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.5;
+    }
+
+    /* ═══════════ Hero ═══════════ */
     .hero {
-      background: linear-gradient(160deg, #0a0a14 0%, #111128 40%, #0d1b2a 70%, #0a0a14 100%);
-      padding: 80px 24px 64px;
-      text-align: center;
       position: relative;
+      padding: 100px 24px 80px;
+      text-align: center;
       overflow: hidden;
+      z-index: 1;
     }
     .hero::before {
       content: "";
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(ellipse at 50% 30%, rgba(100,140,255,0.06) 0%, transparent 60%),
-                  radial-gradient(ellipse at 80% 70%, rgba(200,160,100,0.04) 0%, transparent 50%);
+      top: -50%;
+      left: 50%;
+      transform: translate(-50%, 0);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(ellipse, rgba(255, 107, 43, 0.08) 0%, transparent 70%);
       pointer-events: none;
     }
-    .hero h1 {
-      font-size: 3.2em;
-      font-weight: 700;
-      letter-spacing: 6px;
-      color: #fff;
-      position: relative;
+    .hero::after {
+      content: "";
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--orange-dim), var(--orange), var(--orange-dim), transparent);
     }
-    .hero .subtitle {
-      font-size: 1.15em;
-      color: #8899bb;
-      margin-top: 8px;
-      letter-spacing: 1px;
-      position: relative;
-    }
-    .hero .tagline {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 8px 24px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 24px;
-      font-size: .9em;
-      color: #99aacc;
+    .hero-content { position: relative; }
+
+    /* Logo placeholder area */
+    .hero-logo {
+      width: 180px;
+      height: 50px;
+      margin: 0 auto 32px;
+      border: 1px dashed rgba(255, 107, 43, 0.3);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--orange);
+      font-size: 0.75em;
       letter-spacing: 2px;
-      position: relative;
+      opacity: 0.7;
+      transition: all 0.3s;
     }
-    .hero .update-badge {
-      margin-top: 28px;
-      font-size: .78em;
-      color: #556;
-      position: relative;
+    .hero-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .hero-logo.has-logo {
+      border: none;
+      opacity: 1;
     }
 
-    /* ── Buttons ── */
-    .btn {
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border: 1px solid var(--orange-dim);
+      border-radius: 20px;
+      font-size: 0.78em;
+      color: var(--orange);
+      letter-spacing: 2px;
+      margin-bottom: 28px;
+      background: rgba(255, 107, 43, 0.04);
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      background: var(--orange);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--orange);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4em, 6vw, 4.2em);
+      font-weight: 800;
+      letter-spacing: 8px;
+      color: #fff;
+      text-shadow: 0 0 80px rgba(255, 107, 43, 0.3);
+    }
+    .hero h1 span {
+      color: var(--orange);
+    }
+
+    .hero .subtitle {
+      font-size: 1.1em;
+      color: #6e7a8a;
+      margin-top: 12px;
+      letter-spacing: 2px;
+    }
+
+    .hero .tagline {
       display: inline-block;
-      padding: 12px 28px;
+      margin-top: 24px;
+      padding: 10px 28px;
+      border: 1px solid rgba(255, 107, 43, 0.25);
+      border-radius: 24px;
+      font-size: 0.88em;
+      color: var(--orange-glow);
+      letter-spacing: 2px;
+      background: var(--orange-faint);
+    }
+
+    .hero .update-badge {
+      margin-top: 28px;
+      font-size: 0.75em;
+      color: #3a4050;
+      letter-spacing: 1px;
+    }
+
+    /* ═══════════ Buttons ═══════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 30px;
       border-radius: 8px;
-      font-size: .92em;
+      font-size: 0.9em;
       font-weight: 600;
       letter-spacing: 1px;
       text-decoration: none;
-      transition: all .2s;
+      transition: all 0.25s;
       cursor: pointer;
-    }
-    .btn-primary {
-      background: #3a6bd5;
-      color: #fff;
-      border: none;
-    }
-    .btn-primary:hover { background: #4d7de5; }
-    .btn-outline {
-      border: 1px solid rgba(255,255,255,.2);
-      color: #aac;
-      background: transparent;
-    }
-    .btn-outline:hover { border-color: rgba(255,255,255,.4); color: #dde; }
-    .btn-group {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      margin-top: 24px;
-      flex-wrap: wrap;
       position: relative;
     }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--orange), #E85D1A);
+      color: #fff;
+      border: none;
+      box-shadow: 0 0 30px rgba(255, 107, 43, 0.25), 0 4px 16px rgba(255, 107, 43, 0.15);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 50px rgba(255, 107, 43, 0.4), 0 6px 24px rgba(255, 107, 43, 0.25);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      border: 1px solid rgba(255, 107, 43, 0.3);
+      color: var(--orange);
+      background: transparent;
+    }
+    .btn-outline:hover { border-color: var(--orange); background: var(--orange-faint); }
+    .btn-group {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
 
-    /* ── Section ── */
+    /* ═══════════ Section ═══════════ */
     .section {
-      max-width: 880px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 56px 24px;
+      padding: 60px 24px;
+      position: relative;
+      z-index: 1;
     }
     .section-title {
-      font-size: 1.5em;
-      color: #fff;
-      margin-bottom: 28px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 1.4em;
+      color: var(--text-bright);
+      margin-bottom: 32px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .section-title::before {
+      content: "";
+      width: 24px;
+      height: 2px;
+      background: var(--orange);
+      box-shadow: 0 0 8px var(--orange);
     }
 
-    /* ── Feature Grid ── */
+    /* ═══════════ Feature Grid ═══════════ */
     .feature-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
     }
     .feature-card {
-      background: rgba(255,255,255,.025);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 14px;
-      padding: 28px 24px;
-      transition: border-color .2s;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px 24px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
     }
-    .feature-card:hover { border-color: rgba(255,255,255,.15); }
-    .feature-card .icon { font-size: 1.6em; margin-bottom: 10px; }
-    .feature-card h3 { font-size: 1.05em; color: #ccd; margin-bottom: 8px; }
-    .feature-card p { font-size: .88em; color: #778; }
+    .feature-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--orange-dim), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .feature-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-card .icon { font-size: 1.8em; margin-bottom: 12px; }
+    .feature-card h3 {
+      font-size: 1.02em;
+      color: var(--text-bright);
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    .feature-card p { font-size: 0.86em; color: #5e6878; }
 
-    /* ── Capability List ── */
+    /* ═══════════ Capability List ═══════════ */
     .cap-list {
       list-style: none;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 10px;
     }
     .cap-list li {
-      background: rgba(255,255,255,.018);
-      border-left: 2px solid rgba(180,200,255,.3);
+      background: var(--bg-card);
+      border-left: 2px solid rgba(255, 107, 43, 0.3);
       padding: 14px 18px;
       border-radius: 0 10px 10px 0;
-      font-size: .9em;
-      color: #99a;
+      font-size: 0.88em;
+      color: #747e8c;
+      transition: all 0.2s;
     }
-    .cap-list li strong { color: #bbc; }
+    .cap-list li:hover {
+      border-left-color: var(--orange);
+      background: rgba(255, 107, 43, 0.03);
+    }
+    .cap-list li strong { color: #a8b2be; }
 
-    /* ── Tech Specs Table ── */
+    /* ═══════════ Tech Specs Table ═══════════ */
     .spec-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: .9em;
+      font-size: 0.88em;
     }
     .spec-table th, .spec-table td {
       text-align: left;
-      padding: 10px 16px;
-      border-bottom: 1px solid rgba(255,255,255,.05);
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
     }
     .spec-table th {
-      color: #667;
+      color: var(--orange);
       font-weight: 500;
-      width: 160px;
+      width: 150px;
       letter-spacing: 1px;
+      font-size: 0.82em;
+      text-transform: uppercase;
     }
-    .spec-table td { color: #99a; }
+    .spec-table tr:hover td { background: var(--orange-faint); }
 
-    /* ── Install Block ── */
+    /* ═══════════ Install Block ═══════════ */
     .install-block {
-      background: rgba(255,255,255,.025);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 12px;
-      padding: 28px;
-      font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
-      font-size: .85em;
-      color: #aab;
-      overflow-x: auto;
-    }
-    .install-block .prompt { color: #7af; }
-    .install-block .comment { color: #556; }
-
-    /* ── Doc card ── */
-    .doc-card {
-      background: rgba(255,255,255,.025);
-      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 32px;
-      text-align: center;
+      padding: 30px;
+      font-family: "SF Mono", "Fira Code", "Cascadia Code", "JetBrains Mono", monospace;
+      font-size: 0.83em;
+      color: #8899aa;
+      overflow-x: auto;
+      position: relative;
     }
-    .doc-card p { color: #889; font-size: .92em; margin-bottom: 20px; }
+    .install-block::before {
+      content: "TERMINAL";
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      background: var(--bg-deep);
+      padding: 2px 12px;
+      font-size: 0.7em;
+      letter-spacing: 2px;
+      color: var(--orange);
+      border: 1px solid var(--orange-dim);
+      border-radius: 4px;
+    }
+    .install-block .prompt { color: var(--orange); }
+    .install-block .comment { color: #3d4555; }
 
-    /* ── Footer ── */
+    /* ═══════════ Doc card ═══════════ */
+    .doc-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+    }
+    .doc-card p { color: #6e7a8a; font-size: 0.9em; }
+    .doc-card code {
+      background: rgba(255, 107, 43, 0.1);
+      color: var(--orange);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    /* ═══════════ Comment Section ═══════════ */
+    .comment-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ═══════════ Footer ═══════════ */
     .footer {
+      position: relative;
+      z-index: 1;
       text-align: center;
-      padding: 48px 24px 40px;
-      color: #445;
-      font-size: .82em;
-      border-top: 1px solid rgba(255,255,255,.04);
+      padding: 48px 24px 36px;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
     }
-    .footer .memorial { color: #667; margin-top: 6px; }
+    .footer p { color: #3a4050; font-size: 0.82em; letter-spacing: 1px; }
+    .footer .memorial {
+      color: var(--orange);
+      opacity: 0.6;
+      margin-top: 8px;
+      font-size: 0.85em;
+      letter-spacing: 2px;
+    }
 
-    /* ── Responsive ── */
-    @media (max-width: 600px) {
-      .hero h1 { font-size: 2.2em; }
+    /* ═══════════ Responsive ═══════════ */
+    @media (max-width: 640px) {
+      .hero { padding: 64px 16px 48px; }
+      .hero h1 { letter-spacing: 4px; }
+      .feature-grid { grid-template-columns: 1fr; }
       .cap-list { grid-template-columns: 1fr; }
+      .spec-table th { width: 100px; }
     }
   </style>
 </head>
 <body>
 
-<!-- ═══════════ HERO ═══════════ -->
-<div class="hero">
-  <h1>博 杉</h1>
-  <p class="subtitle">AI 视频提示词生成器 · Bó Shān</p>
-  <div class="tagline">剧本 → 电影级叙事流视频提示词</div>
-  <p class="update-badge">专为 Seedance 等 AI 视频工具设计 &nbsp;|&nbsp; v1.0</p>
-  <div class="btn-group">
-    <a href="https://raw.githubusercontent.com/chengdulinxinruBo3/Bo3/main/SKILL.md" class="btn btn-primary" download>⬇ 下载技能文件</a>
-    <a href="https://github.com/chengdulinxinruBo3/Bo3/blob/main/SKILL.md" class="btn btn-outline" target="_blank">📖 查看完整文档</a>
-  </div>
-</div>
+<!-- ═══════════ Hero ═══════════ -->
+<section class="hero">
+  <div class="hero-content">
+    <!-- Logo Placeholder — replace src with your actual logo -->
+    <div class="hero-logo" id="logoContainer" title="替换为你的公司logo">
+      <!-- <img src="logo.png" alt="公司Logo" onload="this.parentElement.classList.add(''has-logo'')"> -->
+      LOGO
+    </div>
 
-<!-- ═══════════ 核心能力 ═══════════ -->
+    <div class="hero-badge">
+      <span class="dot"></span> SEEDANCE AI PROMPT SYSTEM
+    </div>
+    <h1>博<span>杉</span></h1>
+    <p class="subtitle">Bó Shān · 电影级 AI 视频提示词体系</p>
+    <p class="tagline">空间是压迫 · 脸是战场 · 眼神是刀</p>
+    <div class="btn-group">
+      <a href="https://raw.githubusercontent.com/chengdulinxinruBo3/Bo3/main/SKILL.md" class="btn btn-primary" download>⬇ 下载技能文件</a>
+      <a href="https://github.com/chengdulinxinruBo3/Bo3/blob/main/SKILL.md" class="btn btn-outline" target="_blank">📖 查看完整文档</a>
+    </div>
+    <p class="update-badge">v2.0 · 2026-06-10 · 自动同步 · 链接永久有效</p>
+  </div>
+</section>
+
+<!-- ═══════════ 核心功能 ═══════════ -->
 <div class="section">
-  <h2 class="section-title">核心能力</h2>
+  <h2 class="section-title">核心功能</h2>
   <div class="feature-grid">
     <div class="feature-card">
-      <div class="icon">🎬</div>
-      <h3>叙事流输出</h3>
-      <p>非分镜、非概括——产出连贯的叙事流画面描述，每段独立完整，可直接喂入视频生成工具。</p>
+      <div class="icon">💡</div>
+      <h3>智能光影系统</h3>
+      <p>色温 K 值精确控制 + 三层照度（主光/补光/环境光）+ 光源分层，零黄光标准（≥4800K）</p>
     </div>
     <div class="feature-card">
-      <div class="icon">💡</div>
-      <h3>完整光影体系</h3>
-      <p>色温 K 值控制 + 照度层级 + 光源分层，杜绝黄光，全部 4800K 以上电影级冷光标准。</p>
+      <div class="icon">🎬</div>
+      <h3>电影运镜公式</h3>
+      <p>18 种运镜方式 + 6 级景别推进 + POV 主观镜头规则 + 长镜头触发 S'' 决策公式</p>
     </div>
     <div class="feature-card">
       <div class="icon">😶</div>
-      <h3>微表情引擎</h3>
-      <p>肌肉链级别的面部刻画——从皱眉肌到咬肌到胸锁乳突肌，写皮肤表面的位移与光影变化。</p>
+      <h3>肌肉级微表情</h3>
+      <p>7 层肌肉链传播顺序（愤怒/恐惧/蔑视/震惊/克制），表面效果翻译公式，杜绝僵尸脸</p>
     </div>
     <div class="feature-card">
-      <div class="icon">🎥</div>
-      <h3>运镜与景别公式</h3>
-      <p>标准化运镜推进体系 + 景别切换规则 + POV 主观镜头约束 + 长镜头触发因子算法。</p>
+      <div class="icon">📝</div>
+      <h3>剧本智能拆段</h3>
+      <p>S'' 公式精准计算拆分点（剧情密度+情绪强度+动作复杂度），单段 3~15 秒输出</p>
     </div>
     <div class="feature-card">
-      <div class="icon">🗣️</div>
-      <h3>台词精准保留</h3>
-      <p>100% 原样嵌入，不删不改不概括 + OS 语速约束确保时间轴精度。</p>
+      <div class="icon">🎭</div>
+      <h3>情绪递进引擎</h3>
+      <p>隐藏 → 泄露 → 对抗 → 爆发 → 收束，7 维度反僵尸体系，生活化小动作词库</p>
     </div>
     <div class="feature-card">
-      <div class="icon">🧬</div>
-      <h3>抗僵原则</h3>
-      <p>非对称默认值 + 过渡态描写 + 对抗肌群对冲——从解剖层面防止 AI 生成僵硬表情。</p>
+      <div class="icon">✅</div>
+      <h3>15 项自检清单</h3>
+      <p>台词 100% 保留、OS 语速约束、着装禁用规则、负面提示词全覆盖——输出前逐项核验</p>
     </div>
   </div>
 </div>
@@ -259,11 +463,11 @@
 <div class="section">
   <h2 class="section-title">技术规格</h2>
   <table class="spec-table">
-    <tr><th>适用平台</th><td>Seedance 2.0+，兼容所有 AI 视频生成工具</td></tr>
-    <tr><th>输出格式</th><td>叙事流段落（含景别 / 运镜 / 动作 / 物理细节 + 时间轴）</td></tr>
-    <tr><th>光影标准</th><td>色温 ≥ 4800K，照度分层（主光 : 补光 : 轮廓光），光源命名规范</td></tr>
+    <tr><th>兼容平台</th><td>Seedance 1.0 / 2.0 · Kling · Runway · Sora · Pika · 可灵</td></tr>
+    <tr><th>核心算法</th><td>S'' 智能拆分 / 色温K值自动配光 / 肌肉链传播引擎</td></tr>
+    <tr><th>语言标准</th><td>中英双语质感描述 + 35mm film 电影命名规范</td></tr>
     <tr><th>角色系统</th><td>图片引用绑定 + 身份一致性控制 + 着装禁用规则</td></tr>
-    <tr><th>镜头体系</th><td>18 种运镜方式 + 6 级景别 + POV 规则 + 长镜头触发公式 S&apos;&apos;</td></tr>
+    <tr><th>镜头体系</th><td>18 种运镜方式 + 6 级景别 + POV 规则 + 长镜头触发公式 S''</td></tr>
     <tr><th>表情粒度</th><td>肌肉链传播顺序（愤怒/恐惧/蔑视/克制），表面效果翻译公式</td></tr>
     <tr><th>台词处理</th><td>100% 保留 + 单段 ≤ 40 字 + OS 语速 = 字数 ÷ 3.5 秒</td></tr>
     <tr><th>质量保障</th><td>每段 15 项自检清单 + 负面提示词覆盖画面/人物/光线三类</td></tr>
@@ -274,7 +478,7 @@
 <div class="section">
   <h2 class="section-title">详细能力</h2>
   <ul class="cap-list">
-    <li><strong>段落管理</strong> — 智能拆段算法 S&apos;&apos;，单段最长 15 秒，超时自动拆分</li>
+    <li><strong>段落管理</strong> — 智能拆段算法 S''，单段最长 15 秒，超时自动拆分</li>
     <li><strong>段落衔接</strong> — 换景别用动作接 / 人物反应镜头 / 空镜情绪过渡</li>
     <li><strong>旁白智能处理</strong> — 无效旁白改画面，有效旁白原样保留</li>
     <li><strong>同框人物控制</strong> — 2 人全清晰，3 人主次分离，4 人以上轮切</li>
@@ -309,7 +513,7 @@
       <a href="https://raw.githubusercontent.com/chengdulinxinruBo3/Bo3/main/SKILL.md" class="btn btn-primary" download>⬇ 下载技能文件</a>
       <a href="https://github.com/chengdulinxinruBo3/Bo3/blob/main/SKILL.md" class="btn btn-outline" target="_blank">📖 在线查看全文</a>
     </div>
-    <p style="margin-top:24px;font-size:.82em;color:#667;">
+    <p style="margin-top:24px;font-size:.82em;color:var(--text-dim);">
       <strong>同事如何获取更新</strong>：<br>
       ① 下载 SKILL.md → 放入自己电脑的 <code>$CODEX_HOME/skills/seedance-prompt-generator/</code> 目录 → 重启 Codex 即可使用<br>
       ② 技能有更新后，本页面同步更新——同事重新下载覆盖即获最新版，无需你逐个发送文件
@@ -317,32 +521,26 @@
   </div>
 </div>
 
-
 <!-- ═══════════ 评论区 ═══════════ -->
-<div class="section">
-  <h2 class="section-title">反馈与讨论</h2>
-  <p style="color:#667;font-size:.9em;margin-bottom:24px;">使用 GitHub 账号登录即可留言。技能更新建议、使用问题、新功能需求——都在这里聊。</p>
-  <div id="comments-container" style="max-width:880px;margin:0 auto;">
-    <!-- 部署前把下面 YOUR_USERNAME 和 YOUR_REPO 换成你的 -->
-    <script src="https://utteranc.es/client.js"
-            repo="chengdulinxinruBo3/Bo3"
-            issue-term="博杉 · 技能反馈"
-            label="💬 反馈"
-            theme="github-dark"
-            crossorigin="anonymous"
-            async>
-    </script>
-  </div>
+<div class="comment-section">
+  <h2 class="section-title" style="margin-bottom:16px;">反馈与讨论</h2>
+  <p style="color:var(--text-dim);font-size:.88em;margin-bottom:28px;">使用 GitHub 账号登录即可留言。技能更新建议、使用问题、新功能需求——都在这里聊。</p>
+  <script src="https://utteranc.es/client.js"
+          repo="chengdulinxinruBo3/Bo3"
+          issue-term="博杉 · 技能反馈"
+          label="💬 反馈"
+          theme="github-dark"
+          crossorigin="anonymous"
+          async>
+  </script>
 </div>
 
 <!-- ═══════════ Footer ═══════════ -->
 <div class="footer">
   <p>博杉 · Seedance 视频提示词生成器</p>
-  <p class="memorial">🕯 纪念我们的同事张博3</p>
-  <p style="margin-top:16px;color:#334;">最后更新: 2026-06-10 &nbsp;|&nbsp; 页面自动同步 · 链接永久有效</p>
+  <p class="memorial">🎬 致敬 Bo3</p>
+  <p style="margin-top:14px;">最后更新: 2026-06-10 &nbsp;|&nbsp; 页面自动同步 · 链接永久有效</p>
 </div>
 
 </body>
 </html>
-
-
