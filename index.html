@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>博杉 · AI 视频提示词生成器</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      line-height: 1.7;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(160deg, #0a0a14 0%, #111128 40%, #0d1b2a 70%, #0a0a14 100%);
+      padding: 80px 24px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 50% 30%, rgba(100,140,255,0.06) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 70%, rgba(200,160,100,0.04) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero h1 {
+      font-size: 3.2em;
+      font-weight: 700;
+      letter-spacing: 6px;
+      color: #fff;
+      position: relative;
+    }
+    .hero .subtitle {
+      font-size: 1.15em;
+      color: #8899bb;
+      margin-top: 8px;
+      letter-spacing: 1px;
+      position: relative;
+    }
+    .hero .tagline {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 8px 24px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 24px;
+      font-size: .9em;
+      color: #99aacc;
+      letter-spacing: 2px;
+      position: relative;
+    }
+    .hero .update-badge {
+      margin-top: 28px;
+      font-size: .78em;
+      color: #556;
+      position: relative;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-block;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: .92em;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-decoration: none;
+      transition: all .2s;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: #3a6bd5;
+      color: #fff;
+      border: none;
+    }
+    .btn-primary:hover { background: #4d7de5; }
+    .btn-outline {
+      border: 1px solid rgba(255,255,255,.2);
+      color: #aac;
+      background: transparent;
+    }
+    .btn-outline:hover { border-color: rgba(255,255,255,.4); color: #dde; }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 24px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    /* ── Section ── */
+    .section {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 56px 24px;
+    }
+    .section-title {
+      font-size: 1.5em;
+      color: #fff;
+      margin-bottom: 28px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      letter-spacing: 2px;
+    }
+
+    /* ── Feature Grid ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 14px;
+      padding: 28px 24px;
+      transition: border-color .2s;
+    }
+    .feature-card:hover { border-color: rgba(255,255,255,.15); }
+    .feature-card .icon { font-size: 1.6em; margin-bottom: 10px; }
+    .feature-card h3 { font-size: 1.05em; color: #ccd; margin-bottom: 8px; }
+    .feature-card p { font-size: .88em; color: #778; }
+
+    /* ── Capability List ── */
+    .cap-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 12px;
+    }
+    .cap-list li {
+      background: rgba(255,255,255,.018);
+      border-left: 2px solid rgba(180,200,255,.3);
+      padding: 14px 18px;
+      border-radius: 0 10px 10px 0;
+      font-size: .9em;
+      color: #99a;
+    }
+    .cap-list li strong { color: #bbc; }
+
+    /* ── Tech Specs Table ── */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9em;
+    }
+    .spec-table th, .spec-table td {
+      text-align: left;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .spec-table th {
+      color: #667;
+      font-weight: 500;
+      width: 160px;
+      letter-spacing: 1px;
+    }
+    .spec-table td { color: #99a; }
+
+    /* ── Install Block ── */
+    .install-block {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding: 28px;
+      font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+      font-size: .85em;
+      color: #aab;
+      overflow-x: auto;
+    }
+    .install-block .prompt { color: #7af; }
+    .install-block .comment { color: #556; }
+
+    /* ── Doc card ── */
+    .doc-card {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 32px;
+      text-align: center;
+    }
+    .doc-card p { color: #889; font-size: .92em; margin-bottom: 20px; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 48px 24px 40px;
+      color: #445;
+      font-size: .82em;
+      border-top: 1px solid rgba(255,255,255,.04);
+    }
+    .footer .memorial { color: #667; margin-top: 6px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2.2em; }
+      .cap-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ HERO ═══════════ -->
+<div class="hero">
+  <h1>博 杉</h1>
+  <p class="subtitle">AI 视频提示词生成器 · Bó Shān</p>
+  <div class="tagline">剧本 → 电影级叙事流视频提示词</div>
+  <p class="update-badge">专为 Seedance 等 AI 视频工具设计 &nbsp;|&nbsp; v1.0</p>
+  <div class="btn-group">
+    <a href="SKILL.md" class="btn btn-primary" download>⬇ 下载技能文件</a>
+    <a href="SKILL.md" class="btn btn-outline" target="_blank">📖 查看完整文档</a>
+  </div>
+</div>
+
+<!-- ═══════════ 核心能力 ═══════════ -->
+<div class="section">
+  <h2 class="section-title">核心能力</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="icon">🎬</div>
+      <h3>叙事流输出</h3>
+      <p>非分镜、非概括——产出连贯的叙事流画面描述，每段独立完整，可直接喂入视频生成工具。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">💡</div>
+      <h3>完整光影体系</h3>
+      <p>色温 K 值控制 + 照度层级 + 光源分层，杜绝黄光，全部 4800K 以上电影级冷光标准。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">😶</div>
+      <h3>微表情引擎</h3>
+      <p>肌肉链级别的面部刻画——从皱眉肌到咬肌到胸锁乳突肌，写皮肤表面的位移与光影变化。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🎥</div>
+      <h3>运镜与景别公式</h3>
+      <p>标准化运镜推进体系 + 景别切换规则 + POV 主观镜头约束 + 长镜头触发因子算法。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🗣️</div>
+      <h3>台词精准保留</h3>
+      <p>100% 原样嵌入，不删不改不概括 + OS 语速约束确保时间轴精度。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🧬</div>
+      <h3>抗僵原则</h3>
+      <p>非对称默认值 + 过渡态描写 + 对抗肌群对冲——从解剖层面防止 AI 生成僵硬表情。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 技术规格 ═══════════ -->
+<div class="section">
+  <h2 class="section-title">技术规格</h2>
+  <table class="spec-table">
+    <tr><th>适用平台</th><td>Seedance 2.0+，兼容所有 AI 视频生成工具</td></tr>
+    <tr><th>输出格式</th><td>叙事流段落（含景别 / 运镜 / 动作 / 物理细节 + 时间轴）</td></tr>
+    <tr><th>光影标准</th><td>色温 ≥ 4800K，照度分层（主光 : 补光 : 轮廓光），光源命名规范</td></tr>
+    <tr><th>角色系统</th><td>图片引用绑定 + 身份一致性控制 + 着装禁用规则</td></tr>
+    <tr><th>镜头体系</th><td>18 种运镜方式 + 6 级景别 + POV 规则 + 长镜头触发公式 S&apos;&apos;</td></tr>
+    <tr><th>表情粒度</th><td>肌肉链传播顺序（愤怒/恐惧/蔑视/克制），表面效果翻译公式</td></tr>
+    <tr><th>台词处理</th><td>100% 保留 + 单段 ≤ 40 字 + OS 语速 = 字数 ÷ 3.5 秒</td></tr>
+    <tr><th>质量保障</th><td>每段 15 项自检清单 + 负面提示词覆盖画面/人物/光线三类</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════ 能力清单 ═══════════ -->
+<div class="section">
+  <h2 class="section-title">详细能力</h2>
+  <ul class="cap-list">
+    <li><strong>段落管理</strong> — 智能拆段算法 S&apos;&apos;，单段最长 15 秒，超时自动拆分</li>
+    <li><strong>段落衔接</strong> — 换景别用动作接 / 人物反应镜头 / 空镜情绪过渡</li>
+    <li><strong>旁白智能处理</strong> — 无效旁白改画面，有效旁白原样保留</li>
+    <li><strong>同框人物控制</strong> — 2 人全清晰，3 人主次分离，4 人以上轮切</li>
+    <li><strong>情绪递进链</strong> — 隐藏 → 泄露 → 对抗 → 爆发 → 收束</li>
+    <li><strong>七个反僵尸维度</strong> — 视线/非对称/生理反馈/重心/环境互动/光影/表演指导</li>
+    <li><strong>生活化小动作词库</strong> — 手部 / 整理动作 / 头部 / 身体 / 面部</li>
+    <li><strong>环境音效体系</strong> — 分层音效 + 与 OS 隔离规则 + 动作触发音效</li>
+    <li><strong>质感关键词</strong> — 实拍质感 + 35mm film + cinematic lighting + photorealistic</li>
+    <li><strong>固定约束词</strong> — 字幕透明度 0% + 无背景音乐 + 丰富音效生动对白</li>
+  </ul>
+</div>
+
+<!-- ═══════════ 安装使用 ═══════════ -->
+<div class="section">
+  <h2 class="section-title">安装使用</h2>
+  <div class="install-block">
+    <span class="comment"># 1. 将技能文件夹放入 Codex skills 目录</span><br>
+    <span class="prompt">cp -r</span> seedance-prompt-generator $CODEX_HOME/skills/<br><br>
+    <span class="comment"># 2. 在 Codex 中直接使用</span><br>
+    <span class="prompt">@seedance-prompt-generator</span> 把这段剧本转成视频提示词……<br><br>
+    <span class="comment"># 3. 产出直接粘贴到 Seedance</span><br>
+    每段独立完整，含时间轴 + 景别 + 运镜 + 微表情 + 光影参数
+  </div>
+</div>
+
+<!-- ═══════════ 完整文档与协作更新 ═══════════ -->
+<div class="section">
+  <h2 class="section-title">完整文档与协作更新</h2>
+  <div class="doc-card">
+    <p>点击下方查看或下载 <strong>SKILL.md</strong>，包含全部 9 章完整内容——核心原则、光影体系、运镜句式、微表情引擎、肌肉链力学、负面提示词、输出模板与自检清单。</p>
+    <div class="btn-group">
+      <a href="SKILL.md" class="btn btn-primary" download>⬇ 下载技能文件</a>
+      <a href="SKILL.md" class="btn btn-outline" target="_blank">📖 在线查看全文</a>
+    </div>
+    <p style="margin-top:24px;font-size:.82em;color:#667;">
+      <strong>同事如何获取更新</strong>：<br>
+      ① 下载 SKILL.md → 放入自己电脑的 <code>$CODEX_HOME/skills/seedance-prompt-generator/</code> 目录 → 重启 Codex 即可使用<br>
+      ② 技能有更新后，本页面同步更新——同事重新下载覆盖即获最新版，无需你逐个发送文件
+    </p>
+  </div>
+</div>
+
+
+<!-- ═══════════ 评论区 ═══════════ -->
+<div class="section">
+  <h2 class="section-title">反馈与讨论</h2>
+  <p style="color:#667;font-size:.9em;margin-bottom:24px;">使用 GitHub 账号登录即可留言。技能更新建议、使用问题、新功能需求——都在这里聊。</p>
+  <div id="comments-container" style="max-width:880px;margin:0 auto;">
+    <!-- 部署前把下面 YOUR_USERNAME 和 YOUR_REPO 换成你的 -->
+    <script src="https://utteranc.es/client.js"
+            repo="chengdulinxinruBo3/Bo3"
+            issue-term="博杉 · 技能反馈"
+            label="💬 反馈"
+            theme="github-dark"
+            crossorigin="anonymous"
+            async>
+    </script>
+  </div>
+</div>
+
+<!-- ═══════════ Footer ═══════════ -->
+<div class="footer">
+  <p>博杉 · Seedance 视频提示词生成器</p>
+  <p class="memorial">🕯 纪念我们的同事张博3</p>
+  <p style="margin-top:16px;color:#334;">最后更新: 2026-06-10 &nbsp;|&nbsp; 页面自动同步 · 链接永久有效</p>
+</div>
+
+</body>
+</html>
+
+
