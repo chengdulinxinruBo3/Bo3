@@ -105,9 +105,9 @@
     /* ═══════ Logo ═══════ */
     .hero-logo {
       display: inline-flex;
-      align-items: baseline;
+      align-items: flex-end;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       margin-bottom: 48px;
       padding: 16px 36px;
       border: 1px solid rgba(255,107,43,0.2);
@@ -126,10 +126,11 @@
       transform: translateY(-2px);
     }
     .logo-spark {
-      font-size: 1.8em;
+      font-size: 1.6em;
       color: var(--orange);
       text-shadow: 0 0 20px var(--orange);
       animation: logoPulse 2.4s ease-in-out infinite;
+      line-height: 1;
     }
     @keyframes logoPulse {
       0%, 100% { opacity: 0.6; text-shadow: 0 0 14px var(--orange); }
@@ -145,8 +146,8 @@
     .logo-dot {
       font-size: 2em;
       color: var(--orange);
-      margin: 0 4px;
       font-weight: 700;
+      line-height: 0.8;
     }
     .logo-text-sub {
       font-size: 1.3em;
