@@ -108,7 +108,7 @@
       align-items: baseline;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 36px;
+      margin-bottom: 48px;
       padding: 16px 36px;
       border: 1px solid rgba(255,107,43,0.2);
       border-radius: 14px;
@@ -156,32 +156,13 @@
       text-shadow: 0 0 20px rgba(255,140,74,0.3);
     }
 
-    /* ═══════ Badge ═══════ */
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 20px;
-      border: 1px solid var(--orange-dim);
-      border-radius: 24px;
-      font-size: 0.8em;
-      color: var(--orange);
+    /* ═══════ Version ═══════ */
+    .hero-version {
+      margin-top: 40px;
+      font-size: 0.72em;
+      color: #3a4050;
       letter-spacing: 3px;
-      margin-bottom: 32px;
-      background: var(--orange-glass);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-    .hero-badge .dot {
-      width: 7px; height: 7px;
-      background: var(--orange);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--orange);
-      animation: dotPulse 2s ease-in-out infinite;
-    }
-    @keyframes dotPulse {
-      0%, 100% { box-shadow: 0 0 8px var(--orange); }
-      50% { box-shadow: 0 0 18px var(--orange), 0 0 30px var(--orange-glow); }
+      font-weight: 500;
     }
 
     /* ═══════ Title ═══════ */
@@ -192,7 +173,7 @@
       color: #fff;
       text-shadow: 0 0 120px rgba(255,107,43,0.25);
       line-height: 1.05;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
     .hero h1 span {
       color: var(--orange);
@@ -215,8 +196,8 @@
     }
     .hero .tagline {
       display: inline-block;
-      margin-top: 28px;
-      padding: 12px 32px;
+      margin-top: 32px;
+      padding: 14px 36px;
       border: 1px solid rgba(255,107,43,0.2);
       border-radius: 30px;
       font-size: 0.92em;
@@ -228,12 +209,7 @@
       max-width: 600px;
       line-height: 1.6;
     }
-    .hero .update-badge {
-      margin-top: 32px;
-      font-size: 0.75em;
-      color: #3a4050;
-      letter-spacing: 2px;
-    }
+
 
     /* ═══════ Buttons ═══════ */
     .btn {
@@ -426,7 +402,8 @@
       background: rgba(0,0,0,0.5);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 36px;
+      padding: 44px 36px 36px;
+      margin-top: 4px;
       font-family: "SF Mono", "Fira Code", "Cascadia Code", "JetBrains Mono", monospace;
       font-size: 0.84em;
       color: #8899aa;
@@ -569,9 +546,14 @@
       .btn { padding: 13px 24px; font-size: 0.85em; }
     }
 
-    /* ═══════ Horizontal Scroll Carousel ═══════ */
+        /* ═══════ Horizontal Scroll Carousel ═══════ */
     .section-features { padding: 100px 0; }
     .section-features .section-title { padding: 0 28px; }
+    .scroll-track-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
     .scroll-track {
       overflow-x: auto;
       overflow-y: visible;
@@ -580,6 +562,7 @@
       scrollbar-width: none;
       padding: 20px 28px 40px;
       cursor: grab;
+      flex: 1;
     }
     .scroll-track::-webkit-scrollbar { display: none; }
     .scroll-track:active { cursor: grabbing; }
@@ -692,6 +675,36 @@
       content: "";
     }
 
+
+    .scroll-arrow {
+      flex-shrink: 0;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.5);
+      font-size: 1.5em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s var(--ease-out-expo);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      margin: 0 8px;
+      z-index: 2;
+      line-height: 1;
+    }
+    .scroll-arrow:hover {
+      background: rgba(255,107,43,0.1);
+      border-color: var(--orange);
+      color: var(--orange);
+      box-shadow: 0 0 20px rgba(255,107,43,0.2);
+    }
+    .scroll-arrow:active { transform: scale(0.95); }
+    @media (max-width: 768px) {
+      .scroll-arrow { display: none; }
+    }
     @media (max-width: 768px) {
       .scroll-container .feature-card { flex: 0 0 280px; }
       .section-features { padding: 64px 0; }
@@ -716,9 +729,6 @@
       <span class="logo-text-sub">郑州</span>
     </div>
 
-    <div class="hero-badge">
-      <span class="dot"></span> SEEDANCE AI PROMPT SYSTEM
-    </div>
     <h1>博<span>杉</span></h1>
     <p class="subtitle">Bo3 · 电影级 AI 视频提示词智能体</p>
     <p class="tagline">AI 能生成千万帧画面，却唯有创作者的执念，能让影像拥有灵魂。</p>
@@ -726,19 +736,20 @@
       <a href="SKILL.md" class="btn btn-primary" download>⬇ 下载技能文件</a>
       <a href="SKILL.md" class="btn btn-outline" target="_blank">📖 查看完整文档</a>
     </div>
-    <p class="update-badge">v2.0 · 2026-06</p>
+    <p class="hero-version">v2.0 · 2026-06</p>
   </div>
   <div class="hero-scroll-indicator">
-      <span>向下滚动</span>
-      <div class="arrow"></div>
-    </div>
+    <span>向下滚动</span>
+    <div class="arrow"></div>
   </div>
 </section>
 
 <!-- ═══════════ 核心功能 ═══════════ -->
 <div class="section section-features">
   <h2 class="section-title reveal">核心功能</h2>
-  <div class="scroll-track" id="featureTrack">
+  <div class="scroll-track-wrapper">
+    <button class="scroll-arrow scroll-arrow-left" id="featureArrowLeft" aria-label="上一个">‹</button>
+    <div class="scroll-track" id="featureTrack">
     <div class="scroll-container" id="featureScroll">
       <div class="feature-card reveal">
         <div class="icon">💡</div>
@@ -771,6 +782,8 @@
         <p>台词 100% 保留、OS 语速约束、着装禁用规则、负面提示词全覆盖——输出前逐项核验</p>
       </div>
     </div>
+  </div>
+    <button class="scroll-arrow scroll-arrow-right" id="featureArrowRight" aria-label="下一个">›</button>
   </div>
   <div class="scroll-dots" id="featureDots"></div>
 </div>
@@ -862,9 +875,9 @@
 
 
 
+
 <script>
 (function() {
-  // Intersection Observer
   var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
       if (entry.isIntersecting) {
@@ -881,57 +894,50 @@
   var heroSection = document.querySelector('.hero');
   if (hero && heroSection) {
     window.addEventListener('scroll', function() {
-      var progress = Math.min(window.pageYOffset / heroSection.offsetHeight, 1);
-      hero.style.transform = 'scale(' + (1 - progress * 0.2) + ') translateY(' + (progress * 50) + 'px)';
-      hero.style.opacity = Math.max(1 - progress * 0.6, 0);
+      var p = Math.min(window.pageYOffset / heroSection.offsetHeight, 1);
+      hero.style.transform = 'scale(' + (1 - p * 0.2) + ') translateY(' + (p * 50) + 'px)';
+      hero.style.opacity = Math.max(1 - p * 0.6, 0);
     }, { passive: true });
   }
 
-  // Feature card 3D tilt (only for non-scroll cards)
+  // Card 3D tilt
   document.querySelectorAll('.feature-card').forEach(function(card) {
     card.addEventListener('mousemove', function(e) {
-      var rect = card.getBoundingClientRect();
-      var x = e.clientX - rect.left, y = e.clientY - rect.top;
-      var rx = (y - rect.height/2) / (rect.height/2) * 4;
-      var ry = (x - rect.width/2) / (rect.width/2) * -4;
-      card.style.transform = 'translateY(-8px) scale(1.03) perspective(800px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
+      var r = card.getBoundingClientRect();
+      var rx = (e.clientY - r.top - r.height/2) / (r.height/2) * 4;
+      var ry = (e.clientX - r.left - r.width/2) / (r.width/2) * -4;
+      card.style.transform = 'translateY(-8px) scale(1.03) perspective(800px) rotateX('+rx+'deg) rotateY('+ry+'deg)';
     });
     card.addEventListener('mouseleave', function() { card.style.transform = ''; });
   });
 
-  // ── Feature Carousel ──
+  // Carousel
   var track = document.getElementById('featureTrack');
-  var container = document.getElementById('featureScroll');
-  var dotsContainer = document.getElementById('featureDots');
-  if (track && container && dotsContainer) {
-    var cards = container.querySelectorAll('.feature-card');
-    
-    // Create dots
+  var dotsC = document.getElementById('featureDots');
+  var btnL = document.getElementById('featureArrowLeft');
+  var btnR = document.getElementById('featureArrowRight');
+  if (track && dotsC) {
+    var cards = track.querySelectorAll('.feature-card');
+    var cardW = 340;
     cards.forEach(function(_, i) {
-      var dot = document.createElement('span');
-      dot.className = 'dot-indicator';
-      dot.addEventListener('click', function() {
-        cards[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-      });
-      dotsContainer.appendChild(dot);
+      var d = document.createElement('span');
+      d.className = 'dot-indicator';
+      d.onclick = function() { track.scrollTo({ left: i * cardW, behavior: 'smooth' }); };
+      dotsC.appendChild(d);
     });
-
-    var dots = dotsContainer.querySelectorAll('.dot-indicator');
-    
-    function updateDots() {
-      var scrollLeft = track.scrollLeft;
-      var trackWidth = track.offsetWidth;
-      var activeIdx = Math.round(scrollLeft / (cards[0]?.offsetWidth + 20) || 0);
-      dots.forEach(function(d, i) {
-        d.classList.toggle('active', i === activeIdx);
-      });
+    var dots = dotsC.children;
+    function upd() {
+      var i = Math.round(track.scrollLeft / cardW);
+      for (var j = 0; j < dots.length; j++) dots[j].classList.toggle('active', j === i);
     }
-
-    track.addEventListener('scroll', updateDots, { passive: true });
-    updateDots();
+    track.addEventListener('scroll', upd, { passive: true });
+    if (btnL) btnL.onclick = function() { track.scrollBy({ left: -cardW, behavior: 'smooth' }); };
+    if (btnR) btnR.onclick = function() { track.scrollBy({ left: cardW, behavior: 'smooth' }); };
+    upd();
   }
 })();
 </script>
+
 
 
 
