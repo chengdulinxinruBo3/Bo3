@@ -568,6 +568,135 @@
       .btn-group { gap: 12px; }
       .btn { padding: 13px 24px; font-size: 0.85em; }
     }
+
+    /* ═══════ Horizontal Scroll Carousel ═══════ */
+    .section-features { padding: 100px 0; }
+    .section-features .section-title { padding: 0 28px; }
+    .scroll-track {
+      overflow-x: auto;
+      overflow-y: visible;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 20px 28px 40px;
+      cursor: grab;
+    }
+    .scroll-track::-webkit-scrollbar { display: none; }
+    .scroll-track:active { cursor: grabbing; }
+    .scroll-container {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+    }
+    .scroll-container .feature-card {
+      flex: 0 0 320px;
+      scroll-snap-align: start;
+      transform: none !important;
+    }
+    .scroll-container .feature-card:hover {
+      transform: translateY(-8px) scale(1.03) !important;
+    }
+
+    /* Scroll dots */
+    .scroll-dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .scroll-dots .dot-indicator {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      transition: all 0.4s var(--ease-out-expo);
+      cursor: pointer;
+    }
+    .scroll-dots .dot-indicator.active {
+      background: var(--orange);
+      box-shadow: 0 0 12px var(--orange);
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    /* ═══════ Cap List Enhanced ═══════ */
+    .cap-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px 22px;
+      border-left: 2px solid rgba(255,107,43,0.15);
+      border-radius: 0 14px 14px 0;
+      background: rgba(255,255,255,0.015);
+      transition: all 0.5s var(--ease-out-expo);
+    }
+    .cap-list li:hover {
+      border-left: 3px solid var(--orange);
+      background: rgba(255,107,43,0.05);
+      transform: translateX(6px);
+      box-shadow: 0 4px 30px rgba(255,107,43,0.06);
+    }
+    .cap-icon {
+      font-size: 1.3em;
+      flex-shrink: 0;
+      margin-top: 1px;
+      transition: transform 0.3s var(--ease-out-back);
+    }
+    .cap-list li:hover .cap-icon { transform: scale(1.25); }
+    .cap-list li div { flex: 1; min-width: 0; }
+    .cap-list li strong { display: block; color: #c0c8d4; font-weight: 600; margin-bottom: 2px; font-size: 0.95em; }
+    .cap-list li span { color: #6a7484; font-size: 0.88em; }
+
+    /* ═══════ Spec Table Enhanced ═══════ */
+    .spec-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+    }
+    .spec-table tr {
+      transition: all 0.5s var(--ease-out-expo);
+    }
+    .spec-table tr.reveal.visible:nth-child(1) { transition-delay: 0s; }
+    .spec-table tr.reveal.visible:nth-child(2) { transition-delay: 0.05s; }
+    .spec-table tr.reveal.visible:nth-child(3) { transition-delay: 0.1s; }
+    .spec-table tr.reveal.visible:nth-child(4) { transition-delay: 0.15s; }
+    .spec-table tr.reveal.visible:nth-child(5) { transition-delay: 0.2s; }
+    .spec-table tr.reveal.visible:nth-child(6) { transition-delay: 0.25s; }
+    .spec-table tr.reveal.visible:nth-child(7) { transition-delay: 0.3s; }
+    .spec-table tr.reveal.visible:nth-child(8) { transition-delay: 0.35s; }
+    .spec-table th {
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      background: rgba(255,107,43,0.02);
+      font-size: 0.78em;
+    }
+    .spec-table td {
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.9em;
+    }
+    .spec-table tr:hover td {
+      background: rgba(255,107,43,0.04);
+      color: #d0d6e0;
+    }
+    .spec-table tr:hover th {
+      background: rgba(255,107,43,0.05);
+      color: #ff8c4a;
+    }
+
+    /* ═══════ Install Block Fixed ═══════ */
+    .install-line {
+      padding: 3px 0;
+      line-height: 1.8;
+    }
+    .install-block .prompt::before {
+      content: "";
+    }
+
+    @media (max-width: 768px) {
+      .scroll-container .feature-card { flex: 0 0 280px; }
+      .section-features { padding: 64px 0; }
+    }
+  
   </style>
 </head>
 <body>
@@ -607,40 +736,43 @@
 </section>
 
 <!-- ═══════════ 核心功能 ═══════════ -->
-<div class="section">
+<div class="section section-features">
   <h2 class="section-title reveal">核心功能</h2>
-  <div class="feature-grid">
-    <div class="feature-card reveal">
-      <div class="icon">💡</div>
-      <h3>智能光影系统</h3>
-      <p>色温 K 值精确控制 + 三层照度（主光/补光/环境光）+ 光源分层，零黄光标准（≥4800K）</p>
-    </div>
-    <div class="feature-card reveal">
-      <div class="icon">🎬</div>
-      <h3>电影运镜公式</h3>
-      <p>18 种运镜方式 + 6 级景别推进 + POV 主观镜头规则 + 长镜头触发 S'' 决策公式</p>
-    </div>
-    <div class="feature-card reveal">
-      <div class="icon">😶</div>
-      <h3>肌肉级微表情</h3>
-      <p>7 层肌肉链传播顺序（愤怒/恐惧/蔑视/震惊/克制），表面效果翻译公式，杜绝僵尸脸</p>
-    </div>
-    <div class="feature-card reveal">
-      <div class="icon">📝</div>
-      <h3>剧本智能拆段</h3>
-      <p>S'' 公式精准计算拆分点（剧情密度+情绪强度+动作复杂度），单段 3~15 秒输出</p>
-    </div>
-    <div class="feature-card reveal">
-      <div class="icon">🎭</div>
-      <h3>情绪递进引擎</h3>
-      <p>隐藏 → 泄露 → 对抗 → 爆发 → 收束，7 维度反僵尸体系，生活化小动作词库</p>
-    </div>
-    <div class="feature-card reveal">
-      <div class="icon">✅</div>
-      <h3>15 项自检清单</h3>
-      <p>台词 100% 保留、OS 语速约束、着装禁用规则、负面提示词全覆盖——输出前逐项核验</p>
+  <div class="scroll-track" id="featureTrack">
+    <div class="scroll-container" id="featureScroll">
+      <div class="feature-card reveal">
+        <div class="icon">💡</div>
+        <h3>智能光影系统</h3>
+        <p>色温 K 值精确控制 + 三层照度（主光/补光/环境光）+ 光源分层，零黄光标准（≥4800K）</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="icon">🎬</div>
+        <h3>电影运镜公式</h3>
+        <p>18 种运镜方式 + 6 级景别推进 + POV 主观镜头规则 + 长镜头触发 S'' 决策公式</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="icon">😶</div>
+        <h3>肌肉级微表情</h3>
+        <p>7 层肌肉链传播顺序（愤怒/恐惧/蔑视/震惊/克制），表面效果翻译公式，杜绝僵尸脸</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="icon">📝</div>
+        <h3>剧本智能拆段</h3>
+        <p>S'' 公式精准计算拆分点（剧情密度+情绪强度+动作复杂度），单段 3~15 秒输出</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="icon">🎭</div>
+        <h3>情绪递进引擎</h3>
+        <p>隐藏 → 泄露 → 对抗 → 爆发 → 收束，7 维度反僵尸体系，生活化小动作词库</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="icon">✅</div>
+        <h3>15 项自检清单</h3>
+        <p>台词 100% 保留、OS 语速约束、着装禁用规则、负面提示词全覆盖——输出前逐项核验</p>
+      </div>
     </div>
   </div>
+  <div class="scroll-dots" id="featureDots"></div>
 </div>
 
 <!-- ═══════════ 技术规格 ═══════════ -->
@@ -662,16 +794,16 @@
 <div class="section">
   <h2 class="section-title reveal">详细能力</h2>
   <ul class="cap-list">
-    <li class="reveal reveal-d1"><strong>段落管理</strong> — 智能拆段算法 S''，单段最长 15 秒，超时自动拆分</li>
-    <li class="reveal reveal-d2"><strong>段落衔接</strong> — 换景别用动作接 / 人物反应镜头 / 空镜情绪过渡</li>
-    <li class="reveal reveal-d3"><strong>旁白智能处理</strong> — 无效旁白改画面，有效旁白原样保留</li>
-    <li class="reveal reveal-d4"><strong>同框人物控制</strong> — 2 人全清晰，3 人主次分离，4 人以上轮切</li>
-    <li class="reveal reveal-d5"><strong>情绪递进链</strong> — 隐藏 → 泄露 → 对抗 → 爆发 → 收束</li>
-    <li class="reveal reveal-d6"><strong>七个反僵尸维度</strong> — 视线/非对称/生理反馈/重心/环境互动/光影/表演指导</li>
-    <li class="reveal reveal-d1"><strong>生活化小动作词库</strong> — 手部 / 整理动作 / 头部 / 身体 / 面部</li>
-    <li class="reveal reveal-d2"><strong>环境音效体系</strong> — 分层音效 + 与 OS 隔离规则 + 动作触发音效</li>
-    <li class="reveal reveal-d3"><strong>质感关键词</strong> — 实拍质感 + 35mm film + cinematic lighting + photorealistic</li>
-    <li class="reveal reveal-d4"><strong>固定约束词</strong> — 字幕透明度 0% + 无背景音乐 + 丰富音效生动对白</li>
+    <li class="reveal reveal-d1"><span class="cap-icon">📐</span><div><strong>段落管理</strong><span> — 智能拆段算法 S''，单段最长 15 秒，超时自动拆分</span></div></li>
+    <li class="reveal reveal-d2"><span class="cap-icon">🔗</span><div><strong>段落衔接</strong><span> — 换景别用动作接 / 人物反应镜头 / 空镜情绪过渡</span></div></li>
+    <li class="reveal reveal-d3"><span class="cap-icon">🎙️</span><div><strong>旁白智能处理</strong><span> — 无效旁白改画面，有效旁白原样保留</span></div></li>
+    <li class="reveal reveal-d4"><span class="cap-icon">👥</span><div><strong>同框人物控制</strong><span> — 2 人全清晰，3 人主次分离，4 人以上轮切</span></div></li>
+    <li class="reveal reveal-d5"><span class="cap-icon">📈</span><div><strong>情绪递进链</strong><span> — 隐藏 → 泄露 → 对抗 → 爆发 → 收束</span></div></li>
+    <li class="reveal reveal-d6"><span class="cap-icon">🧬</span><div><strong>七个反僵尸维度</strong><span> — 视线/非对称/生理反馈/重心/环境互动/光影/表演指导</span></div></li>
+    <li class="reveal reveal-d1"><span class="cap-icon">✋</span><div><strong>生活化小动作词库</strong><span> — 手部 / 整理动作 / 头部 / 身体 / 面部</span></div></li>
+    <li class="reveal reveal-d2"><span class="cap-icon">🔊</span><div><strong>环境音效体系</strong><span> — 分层音效 + 与 OS 隔离规则 + 动作触发音效</span></div></li>
+    <li class="reveal reveal-d3"><span class="cap-icon">✨</span><div><strong>质感关键词</strong><span> — 实拍质感 + 35mm film + cinematic lighting + photorealistic</span></div></li>
+    <li class="reveal reveal-d4"><span class="cap-icon">⚡</span><div><strong>固定约束词</strong><span> — 字幕透明度 0% + 无背景音乐 + 丰富音效生动对白</span></div></li>
   </ul>
 </div>
 
@@ -679,12 +811,14 @@
 <div class="section">
   <h2 class="section-title reveal">安装使用</h2>
   <div class="install-block reveal">
-    <span class="comment"># 1. 将技能文件夹放入 Codex skills 目录</span><br>
-    <span class="prompt">cp -r</span> seedance-prompt-generator $CODEX_HOME/skills/<br><br>
-    <span class="comment"># 2. 在 Codex 中直接使用</span><br>
-    <span class="prompt">@seedance-prompt-generator</span> 把这段剧本转成视频提示词……<br><br>
-    <span class="comment"># 3. 产出直接粘贴到 Seedance</span><br>
-    每段独立完整，含时间轴 + 景别 + 运镜 + 微表情 + 光影参数
+    <div class="install-line"><span class="comment"># 1. 将技能文件夹放入 Codex skills 目录</span></div>
+    <div class="install-line"><span class="prompt">$ cp -r</span> seedance-prompt-generator $CODEX_HOME/skills/</div>
+    <div class="install-line" style="height:8px"></div>
+    <div class="install-line"><span class="comment"># 2. 在 Codex 中直接使用</span></div>
+    <div class="install-line"><span class="prompt">$ @seedance-prompt-generator</span> 把这段剧本转成视频提示词……</div>
+    <div class="install-line" style="height:8px"></div>
+    <div class="install-line"><span class="comment"># 3. 产出直接粘贴到 Seedance</span></div>
+    <div class="install-line">每段独立完整，含时间轴 + 景别 + 运镜 + 微表情 + 光影参数</div>
   </div>
 </div>
 
@@ -723,13 +857,14 @@
 <div class="footer">
   <p>Bo3 · Seedance 视频提示词智能体</p>
   <p class="memorial">🎬 致敬 Bo3</p>
-  <p style="margin-top:14px;">最后更新: 2026-06-10 &nbsp;|&nbsp; 页面自动同步 · 链接永久有效</p>
 </div>
+
 
 
 
 <script>
 (function() {
+  // Intersection Observer
   var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
       if (entry.isIntersecting) {
@@ -747,24 +882,57 @@
   if (hero && heroSection) {
     window.addEventListener('scroll', function() {
       var progress = Math.min(window.pageYOffset / heroSection.offsetHeight, 1);
-      hero.style.transform = 'scale(' + (1 - progress * 0.25) + ') translateY(' + (progress * 60) + 'px)';
-      hero.style.opacity = Math.max(1 - progress * 0.7, 0);
+      hero.style.transform = 'scale(' + (1 - progress * 0.2) + ') translateY(' + (progress * 50) + 'px)';
+      hero.style.opacity = Math.max(1 - progress * 0.6, 0);
     }, { passive: true });
   }
 
-  // Card 3D tilt
+  // Feature card 3D tilt (only for non-scroll cards)
   document.querySelectorAll('.feature-card').forEach(function(card) {
     card.addEventListener('mousemove', function(e) {
       var rect = card.getBoundingClientRect();
       var x = e.clientX - rect.left, y = e.clientY - rect.top;
-      var rx = (y - rect.height/2) / (rect.height/2) * 5;
-      var ry = (x - rect.width/2) / (rect.width/2) * -5;
-      card.style.transform = 'translateY(-8px) perspective(800px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
+      var rx = (y - rect.height/2) / (rect.height/2) * 4;
+      var ry = (x - rect.width/2) / (rect.width/2) * -4;
+      card.style.transform = 'translateY(-8px) scale(1.03) perspective(800px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
     });
     card.addEventListener('mouseleave', function() { card.style.transform = ''; });
   });
+
+  // ── Feature Carousel ──
+  var track = document.getElementById('featureTrack');
+  var container = document.getElementById('featureScroll');
+  var dotsContainer = document.getElementById('featureDots');
+  if (track && container && dotsContainer) {
+    var cards = container.querySelectorAll('.feature-card');
+    
+    // Create dots
+    cards.forEach(function(_, i) {
+      var dot = document.createElement('span');
+      dot.className = 'dot-indicator';
+      dot.addEventListener('click', function() {
+        cards[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      });
+      dotsContainer.appendChild(dot);
+    });
+
+    var dots = dotsContainer.querySelectorAll('.dot-indicator');
+    
+    function updateDots() {
+      var scrollLeft = track.scrollLeft;
+      var trackWidth = track.offsetWidth;
+      var activeIdx = Math.round(scrollLeft / (cards[0]?.offsetWidth + 20) || 0);
+      dots.forEach(function(d, i) {
+        d.classList.toggle('active', i === activeIdx);
+      });
+    }
+
+    track.addEventListener('scroll', updateDots, { passive: true });
+    updateDots();
+  }
 })();
 </script>
+
 
 
 </body>
